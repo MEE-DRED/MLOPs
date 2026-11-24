@@ -1,0 +1,33 @@
+{
+  "architecture": "MobileNetV2 (alpha=1.0) + GAP + Dropout + Dense(softmax)",
+  "pretrained_weights": "imagenet",
+  "weight_fallback_used": false,
+  "dropout": 0.2,
+  "l2": 0.0001,
+  "class_weights": {
+    "0": 0.4444444444444444,
+    "1": 1.6875,
+    "2": 1.0485436893203883,
+    "3": 1.1134020618556701,
+    "4": 3.272727272727273
+  },
+  "best_val_macro_f1": 0.6085894660894661,
+  "stage1_best_val_macro_f1": 0.5525647811938135,
+  "selected_stage": 2,
+  "stage1_params": {
+    "trainable_params": 6405,
+    "total_params": 2264389,
+    "frozen_params": 2257984,
+    "unfrozen_backbone_layers": 0
+  },
+  "stage2_params": {
+    "trainable_params": 1669765,
+    "total_params": 2264389,
+    "frozen_params": 594624,
+    "unfrozen_backbone_layers": 40
+  },
+  "epochs_run": {
+    "stage1": 13,
+    "stage2": 18
+  }
+}

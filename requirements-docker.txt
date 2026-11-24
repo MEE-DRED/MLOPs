@@ -1,0 +1,16 @@
+# Runtime dependencies for the container image (CPU only; no notebook/training extras).
+# TensorFlow: the model was trained with TF 2.21 / Keras 3.13 (Colab). `.keras` files are only guaranteed to load
+# in the same Keras major/minor line, so the range below stays on 2.21. Availability of this exact build on PyPI
+# was NOT verified from the build sandbox (no network): if pip cannot find it, use the nearest 2.21.x.
+tensorflow-cpu>=2.21,<2.22
+numpy
+pandas
+scipy
+scikit-learn
+matplotlib
+pillow
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+requests>=2.31
+streamlit>=1.37

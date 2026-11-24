@@ -1,0 +1,15 @@
+{
+  "seed": 42,
+  "dropout": 0.2,
+  "l2": 0.0001,
+  "batch_size": 32,
+  "lr_head": 0.001,
+  "lr_finetune": 0.0001,
+  "epochs_head": 15,
+  "epochs_finetune": 25,
+  "unfreeze_layers": 40,
+  "patience_head": 5,
+  "patience_finetune": 8,
+  "use_class_weights": true,
+  "augment": true
+}

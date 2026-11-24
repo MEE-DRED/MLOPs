@@ -1,0 +1,30 @@
+# data (large / not redistributable here) - see data/README.md
+data/*.npz
+data/train/*
+data/validation/*
+data/test/*
+!data/train/.gitkeep
+!data/validation/.gitkeep
+!data/test/.gitkeep
+data/retraining_uploads/*
+!data/retraining_uploads/.gitkeep
+# runtime state
+database/*.sqlite3
+database/*.sqlite3-*
+checkpoints/
+staging/
+*.tmp
+*.part
+# python / notebooks / OS
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+.env
+.DS_Store
+dr_mlops_workdir/
+outputs/figures/*.tmp
+docs/rubric_compliance.md
+docs/submission_checklist.md
+docs/deployment.md
+docs/demonstration_guide.md

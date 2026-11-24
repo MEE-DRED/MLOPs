@@ -1,0 +1,303 @@
+{
+  "architecture": "MobileNetV2 (alpha=1.0) + GAP + Dropout + Dense(softmax)",
+  "pretrained_weights": "imagenet",
+  "input": {
+    "shape": [
+      224,
+      224,
+      3
+    ],
+    "dtype": "float32 RGB 0-255",
+    "scaling": "inside model (Rescaling 1/127.5, offset -1)"
+  },
+  "classes": [
+    "No DR",
+    "Mild",
+    "Moderate",
+    "Severe",
+    "Proliferative DR"
+  ],
+  "training_dataset": {
+    "name": "RetinaMNIST-224 (MedMNIST v2)",
+    "file": "retinamnist_224.npz",
+    "sha256": "6d579682003c35c5de003fd46c43e9b6f9015ddf73a1e9dece78d962944c7604",
+    "split_sizes": {
+      "train": 1080,
+      "val": 120,
+      "test": 400
+    },
+    "class_counts": {
+      "train": [
+        486,
+        128,
+        206,
+        194,
+        66
+      ],
+      "val": [
+        54,
+        12,
+        28,
+        20,
+        6
+      ],
+      "test": [
+        174,
+        46,
+        92,
+        68,
+        20
+      ]
+    },
+    "uploaded_images_used": 0
+  },
+  "training_config": {
+    "seed": 42,
+    "dropout": 0.2,
+    "l2": 0.0001,
+    "batch_size": 32,
+    "lr_head": 0.001,
+    "lr_finetune": 0.0001,
+    "epochs_head": 15,
+    "epochs_finetune": 25,
+    "unfreeze_layers": 40,
+    "patience_head": 5,
+    "patience_finetune": 8,
+    "use_class_weights": true,
+    "augment": true,
+    "class_weights": {
+      "0": 0.4444444444444444,
+      "1": 1.6875,
+      "2": 1.0485436893203883,
+      "3": 1.1134020618556701,
+      "4": 3.272727272727273
+    },
+    "epochs_run": {
+      "stage1": 13,
+      "stage2": 18
+    },
+    "selected_stage": 2
+  },
+  "metrics": {
+    "validation": {
+      "n_samples": 120,
+      "accuracy": 0.6583333333333333,
+      "loss": 1.2312233753623532,
+      "precision_macro": 0.6400661375661376,
+      "recall_macro": 0.6220634920634921,
+      "f1_macro": 0.6085894660894661,
+      "precision_weighted": 0.7482120811287477,
+      "recall_weighted": 0.6583333333333333,
+      "f1_weighted": 0.6871209114959115,
+      "per_class": {
+        "No DR": {
+          "precision": 0.9285714285714286,
+          "recall": 0.7222222222222222,
+          "f1": 0.8125,
+          "support": 54
+        },
+        "Mild": {
+          "precision": 0.26666666666666666,
+          "recall": 0.6666666666666666,
+          "f1": 0.38095238095238093,
+          "support": 12
+        },
+        "Moderate": {
+          "precision": 0.5925925925925926,
+          "recall": 0.5714285714285714,
+          "f1": 0.5818181818181818,
+          "support": 28
+        },
+        "Severe": {
+          "precision": 0.8125,
+          "recall": 0.65,
+          "f1": 0.7222222222222222,
+          "support": 20
+        },
+        "Proliferative DR": {
+          "precision": 0.6,
+          "recall": 0.5,
+          "f1": 0.5454545454545454,
+          "support": 6
+        }
+      },
+      "confusion_matrix": [
+        [
+          39,
+          10,
+          3,
+          0,
+          2
+        ],
+        [
+          2,
+          8,
+          1,
+          1,
+          0
+        ],
+        [
+          1,
+          10,
+          16,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          7,
+          13,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          1,
+          3
+        ]
+      ],
+      "roc_auc_ovr_macro": 0.8326687340148057,
+      "roc_auc_per_class": {
+        "No DR": 0.8984287317620652,
+        "Mild": 0.787037037037037,
+        "Moderate": 0.7775621118012422,
+        "Severe": 0.9239999999999999,
+        "Proliferative DR": 0.7763157894736843
+      },
+      "quadratic_weighted_kappa": 0.7293951185001768,
+      "within_one_grade_accuracy": 0.925,
+      "majority_class_baseline_accuracy": 0.45
+    },
+    "test": {
+      "n_samples": 400,
+      "accuracy": 0.54,
+      "loss": 1.2093944642755272,
+      "precision_macro": 0.5056061729005726,
+      "recall_macro": 0.4905215039539053,
+      "f1_macro": 0.47158962400508886,
+      "precision_weighted": 0.6170521793243616,
+      "recall_weighted": 0.54,
+      "f1_weighted": 0.5589111776857673,
+      "per_class": {
+        "No DR": {
+          "precision": 0.8273381294964028,
+          "recall": 0.6609195402298851,
+          "f1": 0.7348242811501597,
+          "support": 174
+        },
+        "Mild": {
+          "precision": 0.2689075630252101,
+          "recall": 0.6956521739130435,
+          "f1": 0.3878787878787879,
+          "support": 46
+        },
+        "Moderate": {
+          "precision": 0.41975308641975306,
+          "recall": 0.3695652173913043,
+          "f1": 0.3930635838150289,
+          "support": 92
+        },
+        "Severe": {
+          "precision": 0.6590909090909091,
+          "recall": 0.4264705882352941,
+          "f1": 0.5178571428571429,
+          "support": 68
+        },
+        "Proliferative DR": {
+          "precision": 0.35294117647058826,
+          "recall": 0.3,
+          "f1": 0.32432432432432434,
+          "support": 20
+        }
+      },
+      "confusion_matrix": [
+        [
+          115,
+          43,
+          15,
+          0,
+          1
+        ],
+        [
+          10,
+          32,
+          4,
+          0,
+          0
+        ],
+        [
+          10,
+          37,
+          34,
+          8,
+          3
+        ],
+        [
+          4,
+          6,
+          22,
+          29,
+          7
+        ],
+        [
+          0,
+          1,
+          6,
+          7,
+          6
+        ]
+      ],
+      "roc_auc_ovr_macro": 0.8433454244797745,
+      "roc_auc_per_class": {
+        "No DR": 0.8932712847116264,
+        "Mild": 0.8044092360599362,
+        "Moderate": 0.7353190287972897,
+        "Severe": 0.8928065201984409,
+        "Proliferative DR": 0.890921052631579
+      },
+      "quadratic_weighted_kappa": 0.705937763652597,
+      "within_one_grade_accuracy": 0.885,
+      "majority_class_baseline_accuracy": 0.435
+    }
+  },
+  "acceptance": {
+    "accepted": false,
+    "reasons": [
+      "Accuracy dropped by 0.0250 (max 0.02)"
+    ],
+    "checks": {
+      "integrity": true,
+      "min_eval_samples": true,
+      "macro_f1_not_worse": true,
+      "accuracy_drop_ok": false,
+      "no_class_collapse": true
+    },
+    "policy": {
+      "min_delta_macro_f1": 0.0,
+      "max_accuracy_drop": 0.02,
+      "max_class_recall_drop": 0.35,
+      "min_class_support": 5,
+      "min_eval_samples": 30
+    }
+  },
+  "parent_version": 4,
+  "environment": {
+    "python": "3.13.16",
+    "numpy": "2.4.6",
+    "pandas": "2.2.3",
+    "tensorflow": "2.21.0",
+    "keras": "3.13.2",
+    "gpus": [
+      "/physical_device:GPU:0"
+    ]
+  },
+  "notes": "Re-trained from the notebook.",
+  "disclaimer": "Experimental academic model. Not a medical device or diagnostic tool.",
+  "version": 5,
+  "created_at": "2026-11-23T12:44:09+00:00",
+  "status": "rejected",
+  "model_file": "model_v5.keras",
+  "model_size_bytes": 23031458
+}

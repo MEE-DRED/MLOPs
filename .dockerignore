@@ -1,0 +1,16 @@
+# keep the image small; the dataset is mounted (compose) or added explicitly (Space bundle)
+.git
+**/__pycache__
+**/*.pyc
+data/*.npz
+data/retraining_uploads/*
+database/*.sqlite3*
+state/
+checkpoints/
+staging/
+notebook/
+tests/
+tools/
+docs/
+dr_mlops_workdir/
+.env

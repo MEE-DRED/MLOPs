@@ -1,0 +1,46 @@
+# Local run:   docker compose up --build
+#   dashboard -> http://localhost:8501      API docs (Swagger) -> http://localhost:8000/docs
+# Prerequisites: (1) copy your trained models/ (model_v*.keras, metadata/, current_model.json) into ./models
+#                (2) put retinamnist_224.npz in ./data  (needed for retraining + shift indicators; predictions work without it)
+# NOT executed in the sandbox that produced it (no Docker available).
+x-common: &common
+  build: .
+  image: dr-mlops:latest
+  env_file:
+    - path: .env
+      required: false
+  environment:
+    DR_STATE_DIR: /home/user/state
+    DR_DATASET_NPZ: /home/user/app/data/retinamnist_224.npz
+    DR_MODELS_DIR: /home/user/state/models
+    DR_DB_PATH: /home/user/state/database/dr_mlops.sqlite3
+    DR_UPLOAD_DIR: /home/user/state/uploads
+
+services:
+  api:
+    <<: *common
+    command: ["bash", "-c", "python -m scripts.prepare_runtime && exec uvicorn src.api:app --host 0.0.0.0 --port 8000"]
+    ports: ["8000:8000"]
+    volumes:
+      - dr_state:/home/user/state                                   # persistent: DB, uploads, model versions
+      - ./data:/home/user/app/data:ro                               # original dataset (not baked into the image)
+    healthcheck:
+      test: ["CMD", "python", "-m", "scripts.healthcheck"]
+      interval: 15s
+      timeout: 6s
+      retries: 8
+      start_period: 90s
+
+  dashboard:
+    <<: *common
+    command: ["streamlit", "run", "app/dashboard.py", "--server.port", "8501", "--server.address", "0.0.0.0",
+              "--server.headless", "true", "--browser.gatherUsageStats", "false"]
+    environment:
+      DR_API_URL: http://api:8000                                   # service name on the compose network
+    ports: ["8501:8501"]
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  dr_state:

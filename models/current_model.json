@@ -1,0 +1,31 @@
+{
+  "current_version": 4,
+  "history": [
+    1,
+    2
+  ],
+  "events": [
+    {
+      "time": "2026-11-17T10:22:13+00:00",
+      "action": "set_current",
+      "from": null,
+      "to": 1,
+      "reason": "trained in notebook"
+    },
+    {
+      "time": "2026-11-17T17:18:26+00:00",
+      "action": "set_current",
+      "from": 1,
+      "to": 2,
+      "reason": "trained in notebook"
+    },
+    {
+      "time": "2026-11-21T17:29:29+00:00",
+      "action": "set_current",
+      "from": 2,
+      "to": 4,
+      "reason": "trained in notebook"
+    }
+  ],
+  "updated_at": "2026-11-21T17:29:29+00:00"
+}
