@@ -1,5 +1,7 @@
 # Diabetic Retinopathy Detection Using Deep Learning and MLOps
 
+MILDRED EWENRIM EBOMAH
+
 | Project information | Status / link |
 |---|---|
 | GitHub repository | https://github.com/MEE-DRED/MLOPs.git |
@@ -7,7 +9,6 @@
 | Dashboard | `http://localhost:8501` |
 | API | `http://localhost:8000` |
 | Cloud deployment | https://dr-mlops-app.nicesmoke-10bb86fd.southafricanorth.azurecontainerapps.io 
-
 | Video demonstration: https://youtu.be/PhL55tYvOU0
 
 ## 1. Project Overview
