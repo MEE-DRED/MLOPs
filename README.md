@@ -1,22 +1,24 @@
 # Diabetic Retinopathy Detection Using Deep Learning and MLOps
 
-
-
 | Project information | Status / link |
 |---|---|
-| Video demonstration | To be added |
-| Cloud deployment | Pending |
-| GitHub repository | To be added |
+| GitHub repository | https://github.com/MEE-DRED/MLOPs.git |
+| Local Docker deployment | Verified |
+| Dashboard | `http://localhost:8501` |
+| API | `http://localhost:8000` |
+| Cloud deployment | https://dr-mlops-app.nicesmoke-10bb86fd.southafricanorth.azurecontainerapps.io 
+
+| Video demonstration: https://youtu.be/PhL55tYvOU0
 
 ## 1. Project Overview
 
 This project explores the classification of diabetic retinopathy (DR) severity from retinal fundus photographs using deep learning and an MLOps workflow.
 
-It extends an earlier Introduction to Machine Learning project, which used tabular health indicators, into medical image classification using **RetinaMNIST-224**.
+It extends an earlier Introduction to Machine Learning project, which used tabular health indicators, into medical image classification using **RetinaMNIST-224** from MedMNIST v2.
 
 The model uses **MobileNetV2 transfer learning**, with ImageNet-pretrained weights, to classify retinal images into five diabetic retinopathy severity grades.
 
-Beyond model development, the project is designed around an MLOps lifecycle that includes data validation, preprocessing, training, evaluation, model versioning, prediction, bulk labelled-data upload, retraining, model acceptance, monitoring, and deployment.
+Beyond model development, the project implements an MLOps lifecycle covering data validation, preprocessing, training, evaluation, model versioning, prediction, bulk labelled-data upload, retraining, model acceptance, monitoring, and containerised deployment.
 
 ### Project objectives
 
@@ -27,7 +29,8 @@ Beyond model development, the project is designed around an MLOps lifecycle that
 5. Support bulk upload of labelled images for potential model retraining.
 6. Implement candidate-model evaluation and an acceptance policy.
 7. Track model versions and preserve the current accepted model when a candidate is rejected.
-8. Support monitoring, containerisation, load testing, and cloud deployment.
+8. Implement monitoring, containerisation, and load testing.
+9. Demonstrate the application through a running Docker deployment.
 
 ## 2. Dataset
 
@@ -56,7 +59,7 @@ The recorded notebook run passed the dataset validation checks:
 
 The dataset is not included in this repository. Refer to [`data/README.md`](data/README.md) for acquisition and placement instructions.
 
-Dataset source: [MedMNIST](https://medmnist.com/)
+Dataset source: [MedMNIST](https://medmnist.com/).
 
 ## 3. Classification Labels
 
@@ -70,7 +73,7 @@ The model predicts one of five ordered classes:
 | 3 | Severe | Severe non-proliferative diabetic retinopathy |
 | 4 | Proliferative DR | Proliferative diabetic retinopathy |
 
-The classes are ordinal. A prediction that is one grade away from the true label is different from a prediction several grades away. Consequently, the evaluation includes both conventional classification metrics and ordinal performance measures.
+The classes are ordinal. A prediction that is one grade away from the true label is different from a prediction several grades away. Consequently, the evaluation includes conventional classification metrics and ordinal performance measures.
 
 ## 4. Exploratory Data Analysis
 
@@ -161,11 +164,9 @@ The selected configuration in the recorded run used:
 
 ### Accepted model: Version 4
 
-The model registry identifies **model version 4** as the current accepted model. The notebook reloads the registered model and verifies that it reproduces the saved test accuracy.
+The model registry identifies **model version 4** as the current accepted model. The original recorded evaluation for this version reported the following results:
 
-The recorded test results for version 4 are:
-
-| Metric | Test result |
+| Metric | Recorded result |
 |---|---:|
 | Accuracy | **59.50%** |
 | Loss | 1.2445 |
@@ -177,27 +178,23 @@ The recorded test results for version 4 are:
 | Quadratic weighted kappa | **0.7393** |
 | Within-one-grade accuracy | **89.75%** |
 
+These are the historical evaluation results recorded for version 4. They should not be confused with the later notebook evaluation.
+
 ### Baseline comparison
 
 | Model | Test accuracy | Macro-F1 |
 |---|---:|---:|
 | Majority-class baseline | 43.50% | — |
 | Image-statistics logistic-regression baseline | 36.50% | 0.2603 |
-| MobileNetV2 (accepted version 4) | **59.50%** | **0.4978** |
+| MobileNetV2 (historical version 4 evaluation) | **59.50%** | **0.4978** |
 
-The accepted image-classification model outperformed the simple baselines on test accuracy and macro-F1.
+The recorded version 4 results outperformed the simple baselines on test accuracy and macro-F1.
 
-The within-one-grade accuracy of 89.75% indicates that most predictions were either correct or no more than one severity grade away from the true label. However, the model's performance is not uniform across classes.
+### Subsequent Evaluation: Model Version 5
 
-**Proliferative DR had a recall of 25%**, based on only 20 test images. This is a significant limitation and should not be interpreted as reliable performance for detecting severe disease.
+A later evaluation in the notebook resulted in a new candidate, registered as **model version 5**. However, the candidate did not meet the model acceptance criteria and was therefore rejected.
 
-### Retraining candidate: Version 5
-
-The notebook also demonstrates candidate retraining and model acceptance.
-
-The latest candidate was registered as **version 5**, but it was rejected. Its separate evaluation output reported:
-
-| Metric | Version 5 candidate |
+| Metric | Candidate evaluation |
 |---|---:|
 | Test accuracy | 54.00% |
 | Macro-F1 | 0.4716 |
@@ -205,43 +202,48 @@ The latest candidate was registered as **version 5**, but it was rejected. Its s
 
 The candidate failed the validation accuracy-drop requirement: its validation accuracy decreased by 0.025, exceeding the policy's maximum permitted drop of 0.02.
 
-Although it passed the other recorded integrity, minimum-sample, macro-F1, and class-recall checks, it did not meet the full acceptance policy.
+It passed the other recorded integrity, minimum-sample, macro-F1, and class-recall checks. However, it did not satisfy the complete acceptance policy and therefore did not replace version 4.
 
-**Version 4 therefore remains the current accepted and served model.** Version 5 is retained as a rejected candidate rather than replacing the accepted model.
+The later notebook classification report recorded the following class-specific results:
+
+| Class | Precision | Recall | F1-score | Support |
+|---|---:|---:|---:|---:|
+| No DR | 0.827 | 0.661 | 0.735 | 174 |
+| Mild | 0.269 | 0.696 | 0.388 | 46 |
+| Moderate | 0.420 | 0.370 | 0.393 | 92 |
+| Severe | 0.659 | 0.426 | 0.518 | 68 |
+| Proliferative DR | 0.353 | 0.300 | 0.324 | 20 |
+
+The later evaluation recorded 54.00% test accuracy and 0.4716 macro-F1. Proliferative DR recall was 30%, based on only 20 test images.
 
 ### Evaluation interpretation
 
 The results show that:
 
-- The accepted model performed better than the simple baselines.
-- Ordinal evaluation provides additional information about the distance between predicted and actual grades.
-- Performance is uneven across severity classes.
-- Proliferative DR recall is low and based on a small test sample.
-- The dataset's image characteristics may introduce shortcut-learning or confounding risks.
-
-The model is an experimental result and is not suitable for clinical decision-making.
+- The historical accepted model outperformed the simple baselines.
+- Ordinal evaluation provides additional information about the distance between predicted and actual
 
 ## 7. Model Saving and Version Registry
 
-Models are saved in Keras `.keras` format. The notebook performs a save-and-reload integrity check, which passed in the recorded run. The saved model file was approximately 23 MB.
+The trained model is saved in Keras `.keras` format. After saving, it is loaded again to check that it works correctly and can still make predictions.
 
-The registry maintains model versions, metadata, and a pointer to the current accepted model.
+The project uses a model registry to keep track of saved model versions and their evaluation results. It also identifies which version is currently being used by the application.
 
-| Version | Status | Registry outcome |
-|---:|---|---|
-| 1 | Accepted | Previously accepted |
-| 2 | Accepted | Previously accepted |
-| 3 | Rejected | Not served |
-| 4 | **Accepted** | **Current served model** |
-| 5 | Rejected | Latest candidate; version 4 remains current |
+| Version | Status |
+|---|---|
+| v1 | Accepted |
+| v2 | Accepted |
+| v3 | Rejected |
+| v4 | Accepted – Current model |
+| v5 | Rejected |
 
-Model metadata records information such as training configuration, dataset provenance, evaluation metrics, acceptance decisions, and parent-version information.
+Version 4 remains the model served by the application. Version 5 was registered after a later notebook evaluation but did not meet the acceptance criteria, so it was not promoted.
 
-This allows rejected candidates to be retained for audit purposes without replacing a better-performing accepted model.
+The registry also stores information about each model, including its architecture, training configuration, evaluation metrics, dataset details, and acceptance decision. This makes it easier to track previous experiments and see why a model was accepted or rejected.
 
 ## 8. Prediction Demonstration
 
-The notebook loads the current model through the registry and uses the shared preprocessing and prediction workflow to classify an individual retinal image.
+The application loads the current model through the registry and uses the shared preprocessing and prediction workflow to classify an individual retinal image.
 
 The prediction output includes:
 
@@ -250,99 +252,135 @@ The prediction output includes:
 - Probability values for all five classes.
 - Model version used for prediction.
 
-The recorded demonstration loaded **model version 4**. One example image was classified as **No DR**, with a confidence score of approximately **0.8924**.
+### Verified application prediction
 
-The notebook also demonstrates rejection of an invalid image input.
+A test image named `0002.jpg` was submitted through the dashboard and the API.
+
+| Output | Result |
+|---|---|
+| Image | `0002.jpg` |
+| Predicted class | 1 — Mild |
+| Confidence | 76.0% |
+| Model version | 4 |
+| Dashboard result | Successful |
+| API result | HTTP 200; same predicted class |
+
+The dashboard and API returned consistent prediction results.
+
+The probability values are model softmax scores. They are not calibrated medical risk estimates.
+
+The application also correctly rejected an unreadable test file with HTTP **422 Unprocessable Entity**.
 
 These outputs are experimental model predictions, not medical diagnoses.
 
 ## 9. MLOps Application
 
-The repository contains application code intended to support the wider model lifecycle.
+The project includes a FastAPI backend and a Streamlit dashboard to support model prediction, data uploads, model versioning, retraining, and monitoring.
 
-The main components include:
+### Main Components
 
 | Component | Purpose |
 |---|---|
-| Data acquisition | Obtain or locate the RetinaMNIST dataset |
-| Preprocessing | Validate and prepare images consistently |
+| Data acquisition | Obtain the RetinaMNIST dataset |
+| Preprocessing | Validate and prepare retinal images |
 | Model training | Train the MobileNetV2 classifier |
 | Evaluation | Calculate classification and ordinal metrics |
-| Prediction | Run inference on individual images |
-| Model registry | Store model versions, metadata, and the current-model pointer |
-| API | Provide application endpoints |
-| Database | Store application and upload records |
+| Prediction | Classify individual retinal images |
+| Model registry | Track model versions and evaluation results |
+| API | Handle prediction and other application requests |
+| Database | Store application records and upload information |
 | Bulk upload | Accept multiple labelled images |
-| Retraining | Fine-tune a candidate model |
-| Monitoring | Track service and model activity |
-| Dashboard | Provide a user-facing application interface |
+| Retraining | Fine-tune and evaluate candidate models |
+| Monitoring | Track service, prediction, upload, and retraining activity |
+| Dashboard | Provide a user interface for the application |
 
 ### API
 
-The FastAPI application is intended to expose the following routes. Confirm the route definitions in the source code when running the application.
+The FastAPI application exposes the following endpoints:
 
-| Endpoint | Intended purpose |
+| Endpoint | Purpose |
 |---|---|
 | `GET /health` | Check API health, model availability, version, and uptime |
-| `POST /predict` | Predict the class of one uploaded image |
-| `POST /upload-retraining-data` | Upload multiple labelled images |
-| `GET /retraining-data` | View uploaded-data counts and eligibility |
+| `POST /predict` | Predict the class of an uploaded image |
+| `POST /upload-retraining-data` | Upload labelled images |
+| `GET /retraining-data` | View uploaded-data counts and retraining eligibility |
 | `POST /retrain` | Trigger a retraining job |
 | `GET /retrain/status` | Check retraining job status |
 | `GET /monitoring` | View monitoring information |
 | `GET /models` | View model version history |
 | `POST /models/rollback` | Roll back to a previous accepted model |
 
-Start the API from the project root:
+The `/retrain`, `/upload-retraining-data`, and `/models/rollback` endpoints require API-key authentication.
+
+The API was tested through HTTP requests during local Docker and cloud deployment verification.
+
+To start the API outside Docker:
 
 ```bash
 uvicorn src.api:app --host 0.0.0.0 --port 8000
 ```
 
-When the API is running, its interactive documentation should be available at:
-
-`http://localhost:8000/docs`
+The `/docs` route returned HTTP 404 during testing and is not available as an interactive API documentation page.
 
 Example single-image prediction:
 
 ```bash
-curl -F "file=@sample.png" http://localhost:8000/predict
+curl -X POST "http://localhost:8000/predict" \
+  -F "file=@sample.png"
 ```
 
-The exact upload field names and request formats should be checked against the API implementation.
+### Streamlit Dashboard
 
-### Streamlit dashboard
-
-Start the dashboard in a separate terminal:
+To start the dashboard outside Docker:
 
 ```bash
 streamlit run app/dashboard.py
 ```
 
-The dashboard is intended to provide access to model status, prediction, dataset visualisations, bulk upload, retraining controls, and monitoring information.
+The dashboard provides:
 
-The dashboard expects the API to be available. Configure `DR_API_URL` if the API is running at a different address.
+- Overview of API and model status.
+- Single-image prediction.
+- Dataset insights and image characteristics.
+- Bulk upload of labelled images.
+- Retraining status and candidate acceptance information.
+- Monitoring information.
 
-## 10. Bulk Upload and Retraining Workflow
+The dashboard communicates with the API. Set `DR_API_URL` if the API is running at a different address.
 
-The application is designed to support retraining using newly uploaded labelled retinal images.
-
+10. Bulk Upload and Retraining Workflow
+The application supports bulk uploading labelled retinal images and includes a retraining workflow for fine-tuning the current model.
+Retraining Workflow
 The intended workflow is:
+1. A user uploads retinal images and provides a label for each image.
+2. The application checks that the images are valid and the labels are within the supported classes.
+3. Accepted images and their metadata are stored.
+4. When retraining is triggered, the application loads the current accepted model.
+5. The candidate model is fine-tuned using the uploaded images together with a replay sample from the original training data.
+6. The current model and candidate are evaluated using the original validation data.
+7. The acceptance policy determines whether the candidate can replace the current model.
+8. If accepted, the candidate becomes the new current model. If rejected, the existing accepted model remains in service.
+Verified Bulk Upload Test
+A bulk upload test was performed through the deployed dashboard using five labelled retinal images, covering all five classes.
+Result	Count
+Total images submitted	5
+Accepted images	5
+Rejected images	0
+Images stored after upload	5The application successfully accepted all five images.
 
-1. A user uploads multiple retinal images and provides a label for each.
-2. The API validates the image files and labels.
-3. Accepted images and upload metadata are stored.
-4. The retraining process loads the current accepted model.
-5. A candidate is fine-tuned using the uploaded images together with a replay sample from the original training data.
-6. The current model and candidate are evaluated against the original validation split.
-7. The model acceptance policy determines whether the candidate qualifies for promotion.
-8. An accepted candidate becomes the new current version. A rejected candidate is retained for audit, while the previous accepted model remains in service.
+The upload process also includes checks for invalid labels, unreadable images, duplicate files, and images matching those in the original dataset's training, validation, or test splits. 
 
-The notebook demonstrates model versioning and candidate acceptance/rejection behaviour. The complete end-to-end application workflow should be tested through the running API and dashboard before it is described as fully verified.
+### Retraining
+
+The application includes a manual retraining option and a configurable automatic trigger. The retraining process uses newly uploaded labelled images together with samples from the original training dataset.
+
+Before a candidate model can replace the current model, it is evaluated against the existing model using the validation data. The acceptance policy determines whether the candidate is promoted or rejected.
+
+The notebook demonstrates this process through model evaluation and version registration. In the subsequent evaluation, candidate version 5 did not meet the acceptance criteria and was rejected, leaving version 4 as the current model.
 
 ## 11. Monitoring
 
-The project includes monitoring functionality intended to track service and model activity.
+The application includes monitoring functionality for service and model activity.
 
 Monitoring indicators include:
 
@@ -355,11 +393,11 @@ Monitoring indicators include:
 - Retraining events.
 - Changes in predicted-label proportions and image-statistic distributions.
 
-These indicators can help identify unusual activity or potential changes in incoming data. They do not, by themselves, establish model degradation or clinical performance.
+During testing, the dashboard displayed the API status, current model version, prediction activity, upload counts, and retraining information. These indicators provide an overview of application activity and can help identify unusual changes in incoming data.
 
 ## 12. Repository Structure
 
-The project is organised around the notebook, application, model lifecycle code, and deployment configuration.
+The project is organised around the notebook, application, model lifecycle code, deployment configuration, and test evidence.
 
 ```text
 Diabetic-Retinopathy-MLOps/
@@ -396,28 +434,25 @@ Diabetic-Retinopathy-MLOps/
 ├── outputs/
 │   ├── figures/
 │   ├── reports/
-│   └── tables/
+│   ├── tables/
+│   └── screenshots/
 ├── scripts/
 ├── tests/
 │   └── load/
 └── docs/
     ├── architecture.md
-    ├── deployment.md
-    ├── demonstration_guide.md
-    ├── rubric_compliance.md
-    ├── submission_checklist.md
     └── test_status.md
 ```
 
-This is a guide to the intended project organisation. The final repository should reflect the files actually committed.
+The dataset is not committed to the repository. Refer to `data/README.md` for acquisition instructions.
 
-The dataset, trained models, and generated outputs may be stored outside GitHub when their size makes committing them impractical. If so, provide clear instructions for obtaining them and make sure the application can locate the required files.
+The `outputs/reports/` directory contains the generated flood-test JSON reports. The `outputs/screenshots/` directory contains dashboard demonstration screenshots.
 
 Do not commit credentials, API keys, private patient images, or unnecessary runtime database files.
 
 ## 13. Installation and Local Execution
 
-The model-development notebook was run successfully in Google Colab. Local execution is optional and may require substantial disk space, memory, and compatible TensorFlow dependencies.
+The model-development notebook was run in Google Colab. Local execution may require substantial disk space, memory, and compatible TensorFlow dependencies.
 
 ### Create a virtual environment
 
@@ -443,10 +478,12 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Run the test suite, if available:
+Run the test suite:
 
-```bash
-python -m unittest discover -s tests -t .
+Run the test suite:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests/ -v --ignore=tests/test_submission_zip.py -k "not real_repo_has_everything_the_dockerfile_copies"
 ```
 
 Ensure that the required dataset and model artefacts are available before starting services that depend on them.
@@ -487,58 +524,150 @@ A Colab runtime reset clears in-memory variables and files stored only in the te
 
 Training time depends on the available runtime and accelerator.
 
-## 15. Docker and Cloud Deployment
+## 15. Docker Deployment
 
-The project includes Docker and deployment configuration intended to support containerised execution and cloud hosting.
+The project was successfully built and deployed locally using Docker Desktop and Docker Compose.
 
-**Deployment status: pending verification.**
+### Verified deployment results
 
-The target deployment described in the project documentation is a Hugging Face Docker Space. Refer to [`docs/deployment.md`](docs/deployment.md) for the deployment procedure.
-
-| Item | Status |
+| Item | Result |
 |---|---|
-| Docker configuration | Included in the project |
-| Docker image build | Requires verification |
-| Container startup | Requires verification |
-| Multi-container deployment | Requires verification |
-| Cloud deployment | Pending |
-| Public deployment URL | To be added |
+| Docker image build | Successful |
+| Docker Compose configuration | Valid |
+| API container startup | Successful |
+| Dashboard container startup | Successful |
+| API health check | Healthy |
+| Model loaded by API | Version 4 |
+| Dashboard access | Successful |
+| API health endpoint | Successful |
 
-A configuration file being present does not establish that the image builds, the application starts, or the cloud deployment is live. These steps must be executed and tested before being reported as completed.
+The application was accessed at:
+
+- Dashboard: `http://localhost:8501`
+- API: `http://localhost:8000`
+- API health: `http://localhost:8000/health`
+
+The health endpoint confirmed that the API was online, model loading was successful, and version 4 was being served.
+
+To build and start the application:
+
+```bash
+docker compose build
+docker compose up -d
+```
+
+To inspect container status:
+
+```bash
+docker compose ps
+```
+
+To inspect logs:
+
+```bash
+docker compose logs
+```
+
+### Cloud Deployment
+
+The application was also deployed to Microsoft Azure using Azure Container Apps. The Docker image was published to Docker Hub and used for the deployment.
+
+The deployed dashboard is publicly accessible at:
+
+https://dr-mlops-app.nicesmoke-10bb86fd.southafricanorth.azurecontainerapps.io
+
+The Azure deployment was tested successfully. The dashboard and API health status were confirmed, and model version 4 loaded and served predictions.
+
+The local Docker deployment and Azure deployment were both verified. The Azure load tests and replica comparisons are documented in Section 16.
 
 ## 16. Load and Flood-Request Testing
 
-The project includes load-testing resources intended to evaluate application performance under different container configurations.
+Flood-request tests were executed against the running Docker API using `scripts/flood_test.py`.
 
-The assignment requires request simulation with different numbers of Docker containers.
+The tests covered the prediction endpoint and the health endpoint.
 
-**Verified load-test measurements are not yet available.** Results should be added after running the tests against the containerised application.
+### Results
 
-| Scenario | Containers | Requests | Concurrency | Successful | Failed | Throughput (req/s) | Mean latency (ms) | p95 (ms) | p99 (ms) |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| To be measured | 1 | — | — | — | — | — | — | — | — |
-| To be measured | 2 | — | — | — | — | — | — | — | — |
-| To be measured | 3 | — | — | — | — | — | — | — | — |
+| Scenario | Endpoint | Requests | Concurrency | Successful | Failed | Throughput (req/s) | Mean latency (ms) | P95 (ms) | P99 (ms) |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Prediction test 1 | POST `/predict` | 20 | 2 | 20 | 0 | 1.86 | 1,070.4 | 2,961.5 | 3,590.7 |
+| Prediction test 2 | POST `/predict` | 50 | 5 | 50 | 0 | 2.76 | 1,760.4 | 4,731.6 | 5,487.8 |
+| Health test | GET `/health` | 500 | 25 | 500 | 0 | 147.54 | 162.2 | 349.3 | 408.2 |
+| Prediction test 3 | POST `/predict` | 100 | 10 | 100 | 0 | 3.09 | 3,173.9 | 8,698.6 | 9,506.0 |
 
-For a meaningful comparison, use the same request mix, concurrency, and test duration for each scenario. Record the test environment and retain the generated Locust report or equivalent evidence.
+**Overall result: 670 successful requests and zero failed requests.**
+
+All prediction requests returned HTTP 200. All health requests returned HTTP 200.
+
+### Interpretation
+
+The API completed all tested requests without failures.
+
+The health endpoint handled 500 requests at concurrency 25, achieving 147.54 requests per second with a mean latency of 162.2 ms.
+
+Prediction throughput increased from 1.86 to 3.09 requests per second as the tested concurrency increased from 2 to 10. However, prediction latency also increased. At concurrency 10, mean latency was approximately 3.17 seconds and P95 latency was approximately 8.70 seconds.
+
+These results demonstrate successful request handling under the tested conditions. They do not establish performance under unlimited traffic, and they do not demonstrate the benefits of running multiple API containers.
+
+The four generated JSON reports are retained in `outputs/reports/`.
+
+### Azure Dashboard Load Tests
+
+Additional load tests were conducted against the publicly deployed Azure dashboard using Locust. Each test ran for 60 seconds.
+
+| Concurrent users | Requests | Failed requests | Average response (ms) | P95 (ms) | Throughput (req/s) |
+|---:|---:|---:|---:|---:|---:|
+| 5 | 140 | 0 | 107 | 260 | 2.41 |
+| 10 | 273 | 0 | 112 | 270 | 4.64 |
+| 20 | 539 | 0 | 105 | 130 | 9.10 |
+| 30 | 827 | 0 | 104 | 170 | 14.07 |
+| 50 | 1,372 | 0 | 106 | 140 | 23.14 |
+
+All five tests completed without failed requests.
+
+These tests targeted the dashboard homepage. They measured the application's response to concurrent dashboard requests, not the performance of image prediction.
+
+### Replica Comparison
+
+The Azure deployment was also tested with one, two, and three replicas under the same load of 50 concurrent users for 60 seconds.
+
+| Metric | 1 replica | 2 replicas | 3 replicas |
+|---|---:|---:|---:|
+| Requests | 1,355 | 1,351 | 1,385 |
+| Failed requests | 0 | 0 | 0 |
+| Average response (ms) | 106 | 107 | 106 |
+| Median response (ms) | 94 | 94 | 96 |
+| P95 (ms) | 170 | 120 | 140 |
+| Maximum response (ms) | 550 | 930 | 530 |
+| Throughput (req/s) | 23.20 | 22.89 | 23.47 |
+
+The results were similar across all three configurations. Three replicas achieved slightly higher throughput, but the difference was small. Increasing the replica count did not produce a substantial performance improvement under this test.
+
+These tests measured dashboard homepage requests rather than image prediction requests.
+
+### Scaling Evaluation
+
+The Azure deployment was tested using one, two, and three replicas under the same load of 50 concurrent users. All three configurations handled the requests without failures.
+
+The results showed similar performance across the configurations, with three replicas recording slightly higher throughput. However, the improvement was not substantial under the tested conditions.
 
 ## 17. Demonstration
 
-The video demonstration will be added after recording and publishing.
+Dashboard screenshots are retained under `outputs/screenshots/`.
 
-The demonstration should cover:
+The captured sections include:
 
-- The project and its objectives.
-- The running application and dashboard.
-- A single-image prediction.
-- Bulk upload of labelled images.
-- The retraining process and its outcome.
-- Model versioning and the acceptance/rejection behaviour.
-- Monitoring and deployment, once verified.
+- Overview and API/model status.
+- Single-image prediction.
+- Dataset insights.
+- Image characteristics.
+- Bulk upload.
+- Retraining.
+- Monitoring.
 
-Add genuine screenshots from the running application to the repository, preferably under `docs/images/screenshots/`.
+The prediction demonstration uses `0002.jpg`, classified as Mild with 76.0% confidence by model version 4.
 
-Refer to [`docs/demonstration_guide.md`](docs/demonstration_guide.md) for the recording checklist.
+The notebook demonstrates candidate model evaluation and rejection. Candidate version 5 was rejected because it did not meet the acceptance criteria, leaving version 4 as the current accepted model. The Azure dashboard also provides the retraining interface, although a live retraining run was not completed during cloud testing.
 
 ## 18. Limitations and Ethical Considerations
 
@@ -571,5 +700,4 @@ Always consult a qualified eye-care professional.
 3. Sandler, M. et al. (2018). *MobileNetV2: Inverted Residuals and Linear Bottlenecks*. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition.
 4. Selvaraju, R. R. et al. (2017). *Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization*. Proceedings of the IEEE International Conference on Computer Vision.
 
-Dataset information and licence terms: [https://medmnist.com/](https://medmnist.com/)
-
+Dataset information and licence terms: [MedMNIST](https://medmnist.com/).

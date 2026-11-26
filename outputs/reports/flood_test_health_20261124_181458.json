@@ -1,0 +1,22 @@
+{
+  "requests": 500,
+  "concurrency": 25,
+  "succeeded": 500,
+  "failed": 0,
+  "success_rate_percent": 100.0,
+  "duration_seconds": 3.389,
+  "throughput_rps": 147.54,
+  "latency_ms_successful": {
+    "mean": 162.2,
+    "p50": 132.8,
+    "p95": 349.3,
+    "p99": 408.2,
+    "max": 442.3
+  },
+  "status_codes": {
+    "200": 500
+  },
+  "endpoint": "health",
+  "url": "http://127.0.0.1:8000",
+  "timestamp": "2026-11-24T16:14:58+00:00"
+}

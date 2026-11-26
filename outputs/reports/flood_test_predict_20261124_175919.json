@@ -1,0 +1,22 @@
+{
+  "requests": 20,
+  "concurrency": 2,
+  "succeeded": 20,
+  "failed": 0,
+  "success_rate_percent": 100.0,
+  "duration_seconds": 10.778,
+  "throughput_rps": 1.86,
+  "latency_ms_successful": {
+    "mean": 1070.4,
+    "p50": 915.0,
+    "p95": 2961.5,
+    "p99": 3590.7,
+    "max": 3748.0
+  },
+  "status_codes": {
+    "200": 20
+  },
+  "endpoint": "predict",
+  "url": "http://127.0.0.1:8000",
+  "timestamp": "2026-11-24T15:59:19+00:00"
+}

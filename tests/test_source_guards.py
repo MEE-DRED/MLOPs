@@ -11,11 +11,11 @@ class SourceGuards(unittest.TestCase):
         # `from tensorflow import keras` has no `.saving` in Colab's TF 2.21 / Keras 3.13 (this crashed a real run).
         # Use keras.models.load_model / model.save instead.
         bad = [str(p.relative_to(ROOT)) for p in list((ROOT / "src").glob("*.py")) + list((ROOT / "app").glob("*.py"))
-               if re.search(r"keras\.saving\.", p.read_text())]
+               if re.search(r"keras\.saving\.", p.read_text(encoding="utf-8"))]
         self.assertEqual(bad, [])
 
     def test_notebook_does_not_use_keras_saving(self):
-        nb = (ROOT / "notebook" / "diabetic_retinopathy_image_classification.ipynb").read_text()
+        nb = (ROOT / "notebook" / "diabetic_retinopathy_image_classification.ipynb").read_text(encoding="utf-8")
         self.assertNotIn("keras.saving.", nb)
 
 
