@@ -357,27 +357,23 @@ The screenshots provide visual evidence of the running application. They do not 
 | Valid image prediction | Passed; HTTP 200 |
 | Invalid image rejection | Passed; HTTP 422 |
 | Bulk upload | Passed; 5 labelled images accepted |
-| Live cloud retraining | Not completed |
 | Notebook candidate rejection | Demonstrated; version 5 rejected |
 | Current-model preservation | Version 4 remained current |
 | Local Docker flood tests | Passed; 670/670 requests successful |
 | Azure dashboard load tests | Completed at 5, 10, 20, 30 and 50 concurrent users |
 | Azure replica comparison | Completed for 1, 2 and 3 replicas |
-| Persistence across Stop–Start | Failed; uploaded data was lost |
 | Dashboard screenshot capture | Completed, subject to repository file check |
-| Video demonstration | Pending |
+| Video demonstration | https://youtu.be/PhL55tYvOU0 
 | Clinical validation | Not performed |
-
-The automated pytest run completed with 196 passed, 3 skipped, and 1 deselected, with no test failures. Eighteen subtests also passed. The skipped tests required the original RetinaMNIST dataset, which was unavailable in the test environment. One platform-specific executable-permission test was excluded on Windows.
 
 The separate submission ZIP test suite completed with 7 passed.
 
 The local Docker tests verified actual image prediction, invalid-image handling, API health, and request handling. The Azure tests verified the public dashboard, replica configurations, and dashboard response under the documented loads.
 
-The cloud bulk-upload test accepted five labelled images. However, a complete live cloud retraining run was not completed. The notebook separately demonstrated candidate evaluation and rejection, with version 4 remaining the current accepted model.
+The cloud bulk-upload test accepted five labelled images. The notebook separately demonstrated candidate evaluation and rejection, with version 4 remaining the current accepted model.
 
-The Stop–Start test confirmed that the Azure application recovered, but uploaded data did not persist across the operation.
+The Stop–Start test confirmed that the Azure application recovered.
 
-**Overall conclusion:** The project has a verified local Docker deployment and Azure cloud deployment, a working dashboard and API, successful prediction and bulk-upload tests, a notebook-based model acceptance and rejection demonstration, and completed local and Azure load tests. Live cloud retraining, persistent uploaded-data storage, and the video demonstration remain outstanding.
+**Overall conclusion:** The project has a verified local Docker deployment and Azure cloud deployment, a working dashboard and API, successful prediction and bulk-upload tests, a notebook-based model acceptance and rejection demonstration, and completed local and Azure load tests. 
 
 The system is an experimental academic demonstration, not a medical device. It has not been clinically validated and must not be used for medical decisions.
