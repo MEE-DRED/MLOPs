@@ -9,7 +9,7 @@ MILDRED EWENRIM EBOMAH
 | Dashboard | `http://localhost:8501` |
 | API | `http://localhost:8000` |
 | Cloud deployment | https://dr-mlops-app.nicesmoke-10bb86fd.southafricanorth.azurecontainerapps.io 
-| Video demonstration: https://youtu.be/PhL55tYvOU0
+| Video demonstration  |  https://youtu.be/PhL55tYvOU0
 
 ## 1. Project Overview
 
